@@ -1,0 +1,14 @@
+type: page
+layout: page
+path: /
+meta:
+  title: Taborka setkani
+  desc: stranka pro TS
+  updated_at: '2021-01-18T12:47:37.254Z'
+hero:
+  background: yellow
+  title: TS
+  subtitle: nahiore
+  content: vsechno
+warning:
+  content: musite dodrzovat
