@@ -1,20 +1,24 @@
 {
-  "name": "strapi.moje",
+  "name": "BBB-cms-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node -r esm server.js",
     "startdbg": "node -r esm --inspect server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css-compile": "sass --style expanded --source-map --embed-sources --no-error-css web/style/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "bootstrap": "^4.6.0",
+    "browser-sync": "^2.26.14",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
+    "sass": "^1.32.6",
     "underscore": "^1.12.0"
   }
 }
