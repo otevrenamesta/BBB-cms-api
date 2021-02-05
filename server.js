@@ -1,4 +1,3 @@
-import express from 'express'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import fs from 'fs'
@@ -9,7 +8,7 @@ import BS from 'browser-sync'
 
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
-const DATA_FOLDER = process.env.DATA_FOLDER || './web/data'
+const WEB_FOLDER = process.env.WEB_FOLDER || './web'
 
 const bs = BS.create()
 
@@ -23,21 +22,15 @@ bs.init({
     morgan(process.env.NODE_ENV === 'production' ? 'short' : 'tiny'),
     bodyParser.json(),
     {
-      route: "/api",
+      route: '/api',
       handle: update
     }
   ]
 })
-bs.watch("./web/index.html").on("change", bs.reload)
+bs.watch(WEB_FOLDER + '/index.html').on('change', bs.reload)
 
-// bs.watch("./web/data/*.js", function (event, file) {
-//     if (event === "change") {
-//         bs.reload("./web/data/*.js");
-//     }
-// })
-
-const outFile = './web/style/style.css'
-bs.watch('./web/style/*.scss').on('change', (file) => {
+const outFile = WEB_FOLDER + '/style/style.css'
+bs.watch(WEB_FOLDER + '/style/*.scss').on('change', (file) => {
   const includePaths = ['./node_modules/bootstrap/scss']
   try {
     const f = sass.renderSync({ file, includePaths, outFile })
@@ -49,38 +42,10 @@ bs.watch('./web/style/*.scss').on('change', (file) => {
   }
 })
 
-const JSONBodyParser = bodyParser.json()
-
-const app = express()
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'short' : 'tiny'))
-
-// app.get('/config', (req, res, next) => {
-//   fs.readdir('config/', (err, files) => {
-//     return err ? next(err) : res.json(_.map(files, i => ({ name: i })))
-//   })
-// })
-// app.get('/config/:path', (req, res, next) => {
-//   fs.readFile(`config/${req.params.path}`, 'utf8', (err, content) => {
-//     return err ? next(err) : res.json(content)
-//   })
-// })
-
-// app.get('/data/:path', (req, res, next) => {
-//   fs.readFile(`data/${req.params.path}`, 'utf8', (err, content) => {
-//     return err ? next(err) : res.json(content)
-//   })
-// })
-// app.get('/site.js', (req, res, next) => {
-//   fs.readFile('data/_site.yaml', 'utf8', (err, content) => {
-//     const json = JSON.stringify(yaml.load(content), null, 2)
-//     const js = `var MySiteSettings = ${json}`
-//     return err ? next(err) : res.send(js)
-//   })
-// })
 function update (req, res, next) {
   const pathParts = req.body.path.split('.')
-  const filename = pathParts[0] === '/' ? 'index.js' : pathParts[0]
-  const filePath = path.join(path.resolve(DATA_FOLDER), filename)
+  const filename = pathParts[0] === '/' ? '_index.js' : pathParts[0]
+  const filePath = path.join(path.resolve(WEB_FOLDER), 'data', filename)
   try {
     const data = require(filePath).default
     const subTree = _.get(data, _.rest(pathParts))
@@ -93,13 +58,3 @@ function update (req, res, next) {
     next(err)
   }
 }
-app.put('/data', JSONBodyParser, update)
-
-app.use((err, eq, res, next) => {
-  res.send(err)
-})
-
-// app.listen(port, host, (err) => {
-//   if (err) throw err
-//   console.log(`frodo do magic on ${host}:${port}`)
-// })
