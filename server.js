@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import fs from 'fs'
 import path from 'path'
+import sass from 'sass'
 import _ from 'underscore'
 import BS from 'browser-sync'
 
@@ -17,7 +18,7 @@ bs.init({
   port,
   host,
   open: false,
-  // ui: false,
+  ui: false,
   middleware: [
     morgan(process.env.NODE_ENV === 'production' ? 'short' : 'tiny'),
     bodyParser.json(),
@@ -35,7 +36,6 @@ bs.watch("./web/index.html").on("change", bs.reload)
 //     }
 // })
 
-var sass = require("sass")
 const outFile = './web/style/style.css'
 bs.watch('./web/style/*.scss').on('change', (file) => {
   const includePaths = ['./node_modules/bootstrap/scss']
