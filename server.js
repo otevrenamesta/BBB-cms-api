@@ -6,6 +6,8 @@ import sass from 'sass'
 import _ from 'underscore'
 import BS from 'browser-sync'
 
+import WebDAVHandler from './webdav'
+
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 const WEB_FOLDER = process.env.WEB_FOLDER || './web'
@@ -24,6 +26,10 @@ bs.init({
     {
       route: '/api',
       handle: update
+    },
+    {
+      route: '/webdav',
+      handle: WebDAVHandler(path.join(path.resolve(WEB_FOLDER), 'style'))
     }
   ]
 })
