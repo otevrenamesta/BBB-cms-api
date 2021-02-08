@@ -15,7 +15,7 @@ const WEB_FOLDER = process.env.WEB_FOLDER || './web'
 const bs = BS.create()
 
 bs.init({
-  server: './web',
+  server: WEB_FOLDER,
   port,
   host,
   open: false,

@@ -6,10 +6,9 @@
   "scripts": {
     "start": "node -r esm server.js",
     "startdbg": "node -r esm --inspect server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "css-compile": "sass --style expanded --source-map --embed-sources --no-error-css web/style/"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
