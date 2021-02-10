@@ -1,3 +1,4 @@
+import express from 'express'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import fs from 'fs'
@@ -10,7 +11,8 @@ import WebDAVHandler from './webdav'
 
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
-const WEB_FOLDER = process.env.WEB_FOLDER || './web'
+const WEB_FOLDER = path.resolve(process.env.WEB_FOLDER || './web')
+const PUBLIC = path.join(WEB_FOLDER, 'public')
 
 const bs = BS.create()
 
@@ -22,6 +24,7 @@ bs.init({
   ui: false,
   middleware: [
     morgan(process.env.NODE_ENV === 'production' ? 'short' : 'tiny'),
+    express.static(PUBLIC),
     bodyParser.json(),
     {
       route: '/api',
@@ -29,14 +32,14 @@ bs.init({
     },
     {
       route: '/webdav',
-      handle: WebDAVHandler(path.join(path.resolve(WEB_FOLDER), 'style'))
+      handle: WebDAVHandler(path.join(WEB_FOLDER, 'style'))
     }
   ]
 })
 bs.watch(WEB_FOLDER + '/index.html').on('change', bs.reload)
 
-const outFile = WEB_FOLDER + '/style/style.css'
-bs.watch(WEB_FOLDER + '/style/*.scss').on('change', (file) => {
+const outFile = path.join(PUBLIC, 'style.css')
+function _rebuildStyle (file) {
   const includePaths = ['./node_modules/bootstrap/scss']
   try {
     const f = sass.renderSync({ file, includePaths, outFile })
@@ -46,7 +49,9 @@ bs.watch(WEB_FOLDER + '/style/*.scss').on('change', (file) => {
   } catch (err) {
     console.error(err)
   }
-})
+}
+bs.watch(WEB_FOLDER + '/style/*.scss').on('change', _rebuildStyle)
+bs.watch(WEB_FOLDER + '/style/*.css').on('change', _rebuildStyle)
 
 function update (req, res, next) {
   const pathParts = req.body.path.split('.')
