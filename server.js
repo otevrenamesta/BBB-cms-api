@@ -39,10 +39,11 @@ bs.init({
 bs.watch(WEB_FOLDER + '/index.html').on('change', bs.reload)
 
 const outFile = path.join(PUBLIC, 'style.css')
+const styleMain = path.join(WEB_FOLDER, 'style', 'bootstrap.scss')
 function _rebuildStyle (file) {
   const includePaths = ['./node_modules/bootstrap/scss']
   try {
-    const f = sass.renderSync({ file, includePaths, outFile })
+    const f = sass.renderSync({ file: styleMain, includePaths, outFile })
     fs.writeFile(outFile, f.css, (err) => {
       return err ? console.error(err) : bs.reload(outFile)
     })
@@ -52,6 +53,7 @@ function _rebuildStyle (file) {
 }
 bs.watch(WEB_FOLDER + '/style/*.scss').on('change', _rebuildStyle)
 bs.watch(WEB_FOLDER + '/style/*.css').on('change', _rebuildStyle)
+_rebuildStyle(styleMain)
 
 function update (req, res, next) {
   const pathParts = req.body.path.split('.')
