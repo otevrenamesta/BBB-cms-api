@@ -62,6 +62,7 @@ function update (req, res, next) {
   try {
     const data = require(filePath).default
     const subTree = _.get(data, _.rest(pathParts))
+    if (!subTree) throw new Error(`Nothing found on path: ${req.body.path}`)
     Object.assign(subTree, req.body.data)
     const src = `export default ${JSON.stringify(data, null, 2)}`
     fs.writeFile(filePath, src, (err) => {
