@@ -55,19 +55,21 @@ bs.watch(WEB_FOLDER + '/style/*.scss').on('change', _rebuildStyle)
 bs.watch(WEB_FOLDER + '/style/*.css').on('change', _rebuildStyle)
 _rebuildStyle(styleMain)
 
-function update (req, res, next) {
+const PREFIX = 'export default '
+
+async function update (req, res, next) {
   const pathParts = req.body.path.split('.')
-  const filename = pathParts[0] === '/' ? '_index.js' : pathParts[0]
+  const filename = pathParts[0] === '/' ? '_index.js' : `${pathParts[0]}.js`
   const filePath = path.join(path.resolve(WEB_FOLDER), 'data', filename)
   try {
-    const data = require(filePath).default
-    const subTree = _.get(data, _.rest(pathParts))
+    const src = await fs.promises.readFile(filePath, 'utf8')
+    const tree = JSON.parse(src.substring(PREFIX.length))
+    const subTree = _.get(tree, _.rest(pathParts))
     if (!subTree) throw new Error(`Nothing found on path: ${req.body.path}`)
     Object.assign(subTree, req.body.data)
-    const src = `export default ${JSON.stringify(data, null, 2)}`
-    fs.writeFile(filePath, src, (err) => {
-      return err ? next(err) : res.write('ok') && res.end()
-    })
+    const newSrc = `${PREFIX}${JSON.stringify(tree, null, 2)}`
+    await fs.promises.writeFile(filePath, newSrc, 'utf8')
+    res.write('ok') && res.end()
   } catch (err) {
     next(err)
   }
