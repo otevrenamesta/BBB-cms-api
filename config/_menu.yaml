@@ -1,9 +1,0 @@
-title
-- component: text
-  label: 'Text'
-  name: 'title'
-  rules: 'required'
-- component: text
-  label: 'Odkaz'
-  name: 'link'
-  rules: 'required'
