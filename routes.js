@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser'
 import path from 'path'
-import { listPages } from './files.js'
+import { listPages, concatVendorScripts, renderIndex } from './files.js'
 import buildStyle from './sass_render.js'
 
 const JSONBodyParser = bodyParser.json()
@@ -9,16 +9,24 @@ const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
 export default (ctx) => {
   const { express, auth, app } = ctx
 
+  app.get('/index.html', (req, res, next) => {
+    const name = req.headers.host
+    renderIndex(name).then(r => _sendContent(res, r, 'text/html')).catch(next)
+  })
+  app.get('/:webid/vendor.js', (req, res, next) => {
+    concatVendorScripts()
+      .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
+  })
+  // TODO: servirovat browser-syncem na zabezpecene route pro potreby debug designu atd.
+
   app.get('/:webid/routes.json', (req, res, next) => {
     const filePath = path.join(DATA_FOLDER, req.params.webid)
     listPages(filePath).then(r => res.json(r)).catch(next)
   })
 
   app.get('/:webid/style.css', (req, res, next) => {
-    buildStyle(req.params.webid, DATA_FOLDER).then(css => {
-      res.set('Content-Type', 'text/css')
-      res.send(css)
-    }).catch(next)
+    buildStyle(req.params.webid, DATA_FOLDER)
+      .then(css => _sendContent(res, css, 'text/css')).catch(next)
   })
 
   app.use('/', express.static(DATA_FOLDER))
@@ -46,4 +54,9 @@ export default (ctx) => {
   //   })
 
   return app
+}
+
+function _sendContent(res, content, ctype) {
+  res.set('Content-Type', ctype)
+  res.send(content)
 }
