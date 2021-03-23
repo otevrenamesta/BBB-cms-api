@@ -10,7 +10,7 @@ export default (ctx) => {
   const { express, auth, app } = ctx
 
   app.get('/index.html', (req, res, next) => {
-    const name = req.headers.host
+    const name = req.hostname
     renderIndex(name).then(r => _sendContent(res, r, 'text/html')).catch(next)
   })
   app.get('/:webid/vendor.js', (req, res, next) => {

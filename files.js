@@ -20,13 +20,7 @@ export async function listPages (filePath) {
   })
 }
 
-  //   {path: "/", data: "index.yaml"},
-  //   {path: "/galerie", data: "galerie.yaml"},
-  //   {path: "/vstupne", data: "vstupne.yaml"},
-  //   {path: "/organizace", data: "organizace.yaml"},
-  //   {path: "/program", data: "program.yaml"},
-  //   {path: "/navstevnici", data: "navstevnici.yaml"}
-  //    ]
+//   {path: "/", data: "index.yaml"},
 
 const scripts = [
   'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js',
@@ -50,7 +44,7 @@ export async function concatVendorScripts () {
   return s
 }
 
-export async function renderIndex (apiUrl) {
+export async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-  return template.replace(/{{ API_URL }}/g, '/ts')
+  return template.replace(/{{ API_URL }}/g, '/' + hostname)
 }
