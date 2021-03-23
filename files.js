@@ -46,5 +46,5 @@ export async function concatVendorScripts () {
 
 export async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-  return template.replace(/{{ API_URL }}/g, '/' + hostname)
+  return template.replace(/{{ API_URL }}/g, '/api/' + hostname)
 }
