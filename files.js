@@ -44,7 +44,11 @@ export async function concatVendorScripts () {
   return s
 }
 
+const API = process.env.API || '/api/'
 export async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-  return template.replace(/{{ API_URL }}/g, '/api/' + hostname)
+  const noScript = 'Your browser does not support JavaScript!'
+  return template
+    .replace(/{{ API_URL }}/g, API + hostname)
+    .replace(/{{ NOSCRIPT }}/g, noScript)
 }

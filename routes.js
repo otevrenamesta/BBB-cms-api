@@ -13,11 +13,11 @@ export default (ctx) => {
     const name = req.hostname
     renderIndex(name).then(r => _sendContent(res, r, 'text/html')).catch(next)
   })
+  
   app.get('/:webid/vendor.js', (req, res, next) => {
     concatVendorScripts()
       .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
   })
-  // TODO: servirovat browser-syncem na zabezpecene route pro potreby debug designu atd.
 
   app.get('/:webid/routes.json', (req, res, next) => {
     const filePath = path.join(DATA_FOLDER, req.params.webid)
