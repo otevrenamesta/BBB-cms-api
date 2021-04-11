@@ -6,15 +6,9 @@ import axios from 'axios'
 
 export async function listPages (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
-  function _createPath(i) {
-    let p = '/' + (path.dirname(i.path) === '.' ? '' : path.dirname(i.path))
-    return path.basename(i.path) === 'index.yaml' 
-      ? p 
-      : p + i.path.substr(0, i.path.length - 5)
-  }
   return files.filter(i => i.basename !== '404.yaml').map(i => {
     return { 
-      path: _createPath(i), 
+      path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''), 
       data: i.path
     }
   })
