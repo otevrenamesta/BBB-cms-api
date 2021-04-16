@@ -3,9 +3,9 @@ import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import initAuth from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 
-export async function init (mocks = null) {
+export async function init () {
   const app = express()
-  const auth = mocks ? mocks.auth : initAuth(app)
+  const auth = initAuth(app)
 
   initRoutes({ express, auth, app })
 
@@ -25,3 +25,5 @@ if (process.env.NODE_ENV !== 'test') {
     console.error(err)
   })
 }
+
+if (process.env.SESSION_MOCK) require('modularni-urad-utils/mocks/auth')(port)

@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser'
 import path from 'path'
-import { listPages, concatVendorScripts, renderIndex } from './files.js'
+import files from './files.js'
 import buildStyle from './sass_render.js'
 
 const JSONBodyParser = bodyParser.json()
@@ -11,17 +11,18 @@ export default (ctx) => {
 
   app.get('/index.html', (req, res, next) => {
     const name = req.hostname
-    renderIndex(name).then(r => _sendContent(res, r, 'text/html')).catch(next)
+    files.renderIndex(name)
+      .then(r => _sendContent(res, r, 'text/html')).catch(next)
   })
-  
+
   app.get('/:webid/vendor.js', (req, res, next) => {
-    concatVendorScripts()
+    files.concatVendorScripts()
       .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
   })
 
   app.get('/:webid/routes.json', (req, res, next) => {
     const filePath = path.join(DATA_FOLDER, req.params.webid)
-    listPages(filePath).then(r => res.json(r)).catch(next)
+    files.listPages(filePath).then(r => res.json(r)).catch(next)
   })
 
   app.get('/:webid/style.css', (req, res, next) => {
@@ -29,9 +30,9 @@ export default (ctx) => {
       .then(css => _sendContent(res, css, 'text/css')).catch(next)
   })
 
-  app.use('/', express.static(DATA_FOLDER))
+  process.env.SERVE_STATIC && app.use('/', express.static(DATA_FOLDER))
 
-  // app.post('/',
+  // app.post('/:webid/',
   //   auth.requireMembership(ROLE.PROJECT_INSERTER),
   //   JSONBodyParser,
   //   (req, res, next) => {
@@ -40,23 +41,23 @@ export default (ctx) => {
   //       .catch(next)
   //   })
 
-  // app.put('/:webid/:id',
-  //   (req, res, next) => { 
-  //     projekty.canIUpdate(req.params.id, auth.getUID(req), knex).then(can => {
-  //       return can ? next() : next(401)
-  //     }).catch(next)
-  //   },
-  //   JSONBodyParser,
-  //   (req, res, next) => {
-  //     projekty.update(req.params.id, req.body, knex)
-  //       .then(updated => { res.json(updated[0]) })
-  //       .catch(next)
-  //   })
+  app.put('/:webid/',
+    // (req, res, next) => {
+    //   projekty.canIUpdate(req.params.id, auth.getUID(req), knex).then(can => {
+    //     return can ? next() : next(401)
+    //   }).catch(next)
+    // },
+    JSONBodyParser,
+    (req, res, next) => {
+      files.update(req.params.webid, req.query.file, req.query.id, req.body, DATA_FOLDER)
+        .then(updated => { res.json('ok') })
+        .catch(next)
+    })
 
   return app
 }
 
-function _sendContent(res, content, ctype) {
+function _sendContent (res, content, ctype) {
   res.set('Content-Type', ctype)
   res.send(content)
 }

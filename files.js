@@ -3,12 +3,17 @@ import path from 'path'
 import fs from 'fs'
 import _ from 'underscore'
 import axios from 'axios'
+import yaml from 'yaml'
 
-export async function listPages (filePath) {
+export default {
+  listPages, concatVendorScripts, renderIndex, update
+}
+
+async function listPages (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
   return files.filter(i => i.basename !== '404.yaml').map(i => {
-    return { 
-      path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''), 
+    return {
+      path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
       data: i.path
     }
   })
@@ -30,7 +35,7 @@ const scripts = [
   'https://raw.githubusercontent.com/vencax/bbb-vue-web/master/dist/bbb-web.js'
 ]
 
-export async function concatVendorScripts () {
+async function concatVendorScripts () {
   const reqs = await Promise.all(scripts.map(i => axios.get(i)))
   const s = _.reduce(reqs, (acc, i) => {
     return acc + '\n\n' + i.data
@@ -39,10 +44,24 @@ export async function concatVendorScripts () {
 }
 
 const API = process.env.API || '/api/'
-export async function renderIndex (hostname) {
+async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
   const noScript = 'Your browser does not support JavaScript!'
   return template
     .replace(/{{ API_URL }}/g, API + hostname)
     .replace(/{{ NOSCRIPT }}/g, noScript)
+}
+
+async function update (webid, file, id, body, datafolder) {
+  const pathParts = id.split('.')
+  // const filename = pathParts[0] === '/' ? 'index.yaml' : `${pathParts[0]}.yaml`
+  const filePath = path.join(path.resolve(datafolder), webid, file)
+
+  const src = await fs.promises.readFile(filePath, 'utf8')
+  const tree = yaml.parse(src)
+  const subTree = _.get(tree, pathParts)
+  if (!subTree) throw new Error(`Nothing found on path: ${id}`)
+  Object.assign(subTree, body)
+  const newSrc = yaml.stringify(tree)
+  await fs.promises.writeFile(filePath, newSrc, 'utf8')
 }
