@@ -29,8 +29,12 @@ idealně pomocí orchestrátoru jako např. [kubernetes](https://kubernetes.io/)
 
 Pro lokalni devel je uzitecne mit mock auth service.
 Pro zapnuti je nutne nastavit SESSION_MOCK a SESSION_SERVICE env vars.
-Napr.:
+Pak je dobre nechat express servirovat staticke soubory.
 
+Tedy spusteni Napr.:
 ```
-SESSION_MOCK=3333 SESSION_SERVICE=http://localhost:3333 npm run startdbg
+SERVE_STATIC=1 \
+SESSION_MOCK=3333 \
+SESSION_SERVICE=http://localhost:3333 \
+npm run startdbg
 ```
