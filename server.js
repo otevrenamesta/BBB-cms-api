@@ -26,4 +26,4 @@ if (process.env.NODE_ENV !== 'test') {
   })
 }
 
-if (process.env.SESSION_MOCK) require('modularni-urad-utils/mocks/auth')(port)
+if (process.env.SESSION_MOCK) require('modularni-urad-utils/mocks/auth')()
