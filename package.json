@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "mkdir -p dist && cp -R node_modules *.js templates dist/",
     "start": "node -r esm server.js",
     "startdbg": "nodemon -r esm --inspect server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
