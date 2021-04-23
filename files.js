@@ -31,7 +31,7 @@ const scripts = [
   'https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.1.3/vue-router.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.0.0/js-yaml.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.1/marked.min.js',
-
+  'https://unpkg.com/vue-final-modal@2.1.0/dist/VueFinalModal.umd.js',
   'https://raw.githubusercontent.com/vencax/bbb-vue-web/master/dist/bbb-web.js'
 ]
 
