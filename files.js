@@ -73,7 +73,9 @@ async function create (webid, body, UID, datafolder) {
     throw new Error('already exists')
   } catch (e) {
     if (e.code !== 'ENOENT') throw e
-    const data = `UID: ${UID}`
-    return fs.promises.writeFile(filePath, data, 'utf8')
+    const now = (new Date()).toISOString()
+    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page`
+    await fs.promises.writeFile(filePath, data, 'utf8')
+    return data
   }
 }

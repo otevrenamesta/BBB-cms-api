@@ -37,7 +37,7 @@ export default (ctx) => {
     JSONBodyParser,
     (req, res, next) => {
       files.create(req.params.webid, req.body, auth.getUID(req), DATA_FOLDER)
-        .then(created => { res.json('ok') })
+        .then(created => { res.json({ content: created }) })
         .catch(next)
     })
 
