@@ -32,14 +32,14 @@ export default (ctx) => {
 
   process.env.SERVE_STATIC && app.use('/', express.static(DATA_FOLDER))
 
-  // app.post('/:webid/',
-  //   auth.requireMembership(ROLE.PROJECT_INSERTER),
-  //   JSONBodyParser,
-  //   (req, res, next) => {
-  //     projekty.create(req.body, auth.getUID(req), knex)
-  //       .then(created => { res.json(created[0]) })
-  //       .catch(next)
-  //   })
+  app.post('/:webid/',
+    // auth.requireMembership(ROLE.PROJECT_INSERTER),
+    JSONBodyParser,
+    (req, res, next) => {
+      files.create(req.params.webid, req.body, auth.getUID(req), DATA_FOLDER)
+        .then(created => { res.json('ok') })
+        .catch(next)
+    })
 
   app.put('/:webid/',
     // (req, res, next) => {

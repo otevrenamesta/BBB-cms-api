@@ -6,7 +6,7 @@ import axios from 'axios'
 import yaml from 'yaml'
 
 export default {
-  listPages, concatVendorScripts, renderIndex, update
+  listPages, concatVendorScripts, renderIndex, update, create
 }
 
 async function listPages (filePath) {
@@ -64,4 +64,16 @@ async function update (webid, file, id, body, datafolder) {
   Object.assign(subTree, body)
   const newSrc = yaml.stringify(tree)
   await fs.promises.writeFile(filePath, newSrc, 'utf8')
+}
+
+async function create (webid, body, UID, datafolder) {
+  const filePath = path.join(path.resolve(datafolder), webid, `${body.path}.yaml`)
+  try {
+    await fs.promises.stat(filePath)
+    throw new Error('already exists')
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e
+    const data = `UID: ${UID}`
+    return fs.promises.writeFile(filePath, data, 'utf8')
+  }
 }
