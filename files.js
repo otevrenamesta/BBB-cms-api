@@ -67,14 +67,15 @@ async function update (webid, file, id, body, datafolder) {
 }
 
 async function create (webid, body, UID, datafolder) {
-  const filePath = path.join(path.resolve(datafolder), webid, `${body.path}.yaml`)
+  const parent = body.parent ? path.dirname(body.parent) : null
+  const filePath = path.join(path.resolve(datafolder), webid, parent, `${body.path}.yaml`)
   try {
     await fs.promises.stat(filePath)
     throw new Error('already exists')
   } catch (e) {
     if (e.code !== 'ENOENT') throw e
     const now = (new Date()).toISOString()
-    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page`
+    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
     await fs.promises.writeFile(filePath, data, 'utf8')
     return data
   }
