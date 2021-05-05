@@ -1,58 +1,42 @@
-import bodyParser from 'body-parser'
 import path from 'path'
 import files from './files.js'
 import buildStyle from './sass_render.js'
+import adminRoutes from './admin_routes.js'
 
-const JSONBodyParser = bodyParser.json()
 const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
 
 export default (ctx) => {
-  const { express, auth, app } = ctx
+  const { express, app } = ctx
 
   app.get('/index.html', (req, res, next) => {
-    const name = req.hostname
-    files.renderIndex(name)
+    const domain = process.env.DOMAIN || req.hostname
+    files.renderIndex(domain)
       .then(r => _sendContent(res, r, 'text/html')).catch(next)
   })
 
-  app.get('/:webid/vendor.js', (req, res, next) => {
-    files.concatVendorScripts()
+  app.get('/vendor.js', (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    files.concatVendorScripts(domain)
       .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
   })
 
-  app.get('/:webid/routes.json', (req, res, next) => {
-    const filePath = path.join(DATA_FOLDER, req.params.webid)
+  app.get('/routes.json', (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    const filePath = path.join(DATA_FOLDER, domain)
     files.listPages(filePath).then(r => res.json(r)).catch(next)
   })
 
-  app.get('/:webid/style.css', (req, res, next) => {
-    buildStyle(req.params.webid, DATA_FOLDER)
+  app.get('/style.css', (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    buildStyle(domain, DATA_FOLDER)
       .then(css => _sendContent(res, css, 'text/css')).catch(next)
   })
 
-  process.env.SERVE_STATIC && app.use('/', express.static(DATA_FOLDER))
+  if (process.env.DOMAIN) {
+    app.use('/data', express.static(path.join(DATA_FOLDER, process.env.DOMAIN)))
+  }
 
-  app.post('/:webid/',
-    // auth.requireMembership(ROLE.PROJECT_INSERTER),
-    JSONBodyParser,
-    (req, res, next) => {
-      files.create(req.params.webid, req.body, auth.getUID(req), DATA_FOLDER)
-        .then(created => { res.json({ content: created }) })
-        .catch(next)
-    })
-
-  app.put('/:webid/',
-    // (req, res, next) => {
-    //   projekty.canIUpdate(req.params.id, auth.getUID(req), knex).then(can => {
-    //     return can ? next() : next(401)
-    //   }).catch(next)
-    // },
-    JSONBodyParser,
-    (req, res, next) => {
-      files.update(req.params.webid, req.query.file, req.query.id, req.body, DATA_FOLDER)
-        .then(updated => { res.json('ok') })
-        .catch(next)
-    })
+  app.use('/api', adminRoutes(ctx, DATA_FOLDER))
 
   return app
 }

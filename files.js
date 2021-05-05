@@ -43,13 +43,10 @@ async function concatVendorScripts () {
   return s
 }
 
-const API = process.env.API || '/api/'
 async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
   const noScript = 'Your browser does not support JavaScript!'
-  return template
-    .replace(/{{ API_URL }}/g, API + hostname)
-    .replace(/{{ NOSCRIPT }}/g, noScript)
+  return template.replace(/{{ NOSCRIPT }}/g, noScript)
 }
 
 async function update (webid, file, id, body, datafolder) {
@@ -67,7 +64,7 @@ async function update (webid, file, id, body, datafolder) {
 }
 
 async function create (webid, body, UID, datafolder) {
-  const parent = body.parent ? path.dirname(body.parent) : null
+  const parent = body.parent ? path.dirname(body.parent) : ''
   const filePath = path.join(path.resolve(datafolder), webid, parent, `${body.path}.yaml`)
   try {
     await fs.promises.stat(filePath)
