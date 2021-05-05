@@ -19,8 +19,6 @@ async function listPages (filePath) {
   })
 }
 
-//   {path: "/", data: "index.yaml"},
-
 const scripts = [
   'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js',
