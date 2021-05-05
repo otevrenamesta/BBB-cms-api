@@ -1,4 +1,5 @@
 import express from 'express'
+import morgan from 'morgan'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import initAuth from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
@@ -6,6 +7,8 @@ import initRoutes from './routes'
 export async function init () {
   const app = express()
   const auth = initAuth(app)
+
+  app.use(morgan())
 
   initRoutes({ express, auth, app })
 
