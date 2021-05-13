@@ -8,12 +8,6 @@ const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
 export default (ctx) => {
   const { express, app } = ctx
 
-  app.get('/index.html', (req, res, next) => {
-    const domain = process.env.DOMAIN || req.hostname
-    files.renderIndex(domain)
-      .then(r => _sendContent(res, r, 'text/html')).catch(next)
-  })
-
   app.get('/vendor.js', (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
     files.concatVendorScripts(domain)
@@ -34,6 +28,12 @@ export default (ctx) => {
 
   if (process.env.DOMAIN) {
     app.use('/data', express.static(path.join(DATA_FOLDER, process.env.DOMAIN)))
+
+    app.get('*', (req, res, next) => {
+      const domain = process.env.DOMAIN || req.hostname
+      files.renderIndex(domain)
+        .then(r => _sendContent(res, r, 'text/html')).catch(next)
+    })
   }
 
   app.use('/api', adminRoutes(ctx, DATA_FOLDER))
