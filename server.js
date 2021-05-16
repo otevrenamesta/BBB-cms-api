@@ -1,9 +1,11 @@
 import express from 'express'
 import morgan from 'morgan'
+import path from 'path'
 import cors from 'cors'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import initAuth from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
+import initWebDavServer from './webdavServer.js'
 
 export async function init () {
   const app = express()
@@ -11,7 +13,12 @@ export async function init () {
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
-  initRoutes({ express, auth, app })
+  const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
+
+  initRoutes({ express, auth, app, DATA_FOLDER })
+  
+  process.env.WEBDAV_PORT 
+    && initWebDavServer(process.env.WEBDAV_PORT, DATA_FOLDER)
 
   initErrorHandlers(app) // ERROR HANDLING
   return app

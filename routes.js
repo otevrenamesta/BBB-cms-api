@@ -3,10 +3,8 @@ import files from './files.js'
 import buildStyle from './sass_render.js'
 import adminRoutes from './admin_routes.js'
 
-const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
-
 export default (ctx) => {
-  const { express, app } = ctx
+  const { express, app, DATA_FOLDER } = ctx
 
   app.get('/vendor.js', (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
