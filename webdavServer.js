@@ -19,11 +19,11 @@ export default (port, DATA_FOLDER) => {
   })
 
   function _addFolder (folder, server) {
-    const foldr = new webdav.PhysicalFileSystem(folder)
+    const foldr = new webdav.PhysicalFileSystem(path.join(folder, '_service'))
     const domain = path.basename(folder)
 
     // add domain webdav users
-    const userFile = path.join(folder, 'webdav_users.json')
+    const userFile = path.join(folder, '_service/webdav_users.json')
     const users = fs.readFileSync(userFile)
     _.map(JSON.parse(users), i => {
       const user = userManager.addUser(i.username, i.password, false)

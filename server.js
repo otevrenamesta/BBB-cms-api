@@ -1,6 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
 import path from 'path'
+import fs from 'fs'
 import cors from 'cors'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import initAuth from 'modularni-urad-utils/auth'
@@ -13,7 +14,13 @@ export async function init () {
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
-  const DATA_FOLDER = path.resolve(process.env.DATA_FOLDER || './data')
+  let DATA_FOLDER = process.env.DATA_FOLDER
+  try {
+    DATA_FOLDER = path.resolve(DATA_FOLDER)
+    fs.statSync(DATA_FOLDER)
+  } catch (_) {
+    throw new Error(`DATA_FOLDER ${process.env.DATA_FOLDER} not exists!`)
+  }
 
   initRoutes({ express, auth, app, DATA_FOLDER })
   
