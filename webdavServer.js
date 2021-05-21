@@ -3,7 +3,7 @@ import _ from 'underscore'
 import fs from 'fs'
 import path from 'path'
 const webdav = require('webdav-server').v2
-const host = process.env.WEBDAV_HOST || '127.0.0.1'
+const hostname = process.env.WEBDAV_HOST || '127.0.0.1'
 
 export default (port, DATA_FOLDER) => {
   // User manager (tells who are the users)
@@ -14,7 +14,7 @@ export default (port, DATA_FOLDER) => {
   const server = new webdav.WebDAVServer({
       httpAuthentication: new webdav.HTTPDigestAuthentication(userManager, 'Default realm'),
       privilegeManager: privilegeManager,
-      host,
+      hostname,
       port
   })
 
