@@ -27,6 +27,7 @@ const scripts = [
   'https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/vuex/3.1.2/vuex.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.1.3/vue-router.min.js',
+  'https://unpkg.com/vue-meta@2.4.0/dist/vue-meta.js',
   'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.0.0/js-yaml.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.1/marked.min.js',
   'https://raw.githubusercontent.com/otevrenamesta/bbb-vue-web/master/dist/bbb-web.js'
