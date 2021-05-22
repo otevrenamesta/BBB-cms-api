@@ -18,6 +18,12 @@ export default (ctx) => {
     files.listPages(filePath).then(r => res.json(r)).catch(next)
   })
 
+  app.get('/metainfo.json', (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    const filePath = path.join(DATA_FOLDER, domain)
+    files.listMetaInfo(filePath).then(r => res.json(r)).catch(next)
+  })
+
   app.get('/style.css', (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
     buildStyle(domain, DATA_FOLDER)
