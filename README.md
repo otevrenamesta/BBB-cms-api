@@ -47,3 +47,7 @@ SESSION_MOCK=3333 \
 SESSION_SERVICE=http://localhost:3333 \
 npm run startdbg
 ```
+
+## Pripojeni pres web dav
+
+Working: z VSCode pres plugin [remote-workspace](https://marketplace.visualstudio.com/items?itemName=liveecommerce.vscode-remote-workspace).

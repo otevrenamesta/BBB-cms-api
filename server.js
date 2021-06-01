@@ -1,3 +1,4 @@
+process.chdir('/tmp');
 import express from 'express'
 import morgan from 'morgan'
 import path from 'path'
@@ -6,7 +7,7 @@ import cors from 'cors'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import initAuth from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
-import initWebDavServer from './webdavServer.js'
+import initWebDavServer from './webdav/server.js'
 
 export async function init () {
   const app = express()
