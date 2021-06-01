@@ -26,6 +26,8 @@ Mozno pripojit do adresare weby pomoci submodulu z externich git repositaru
 a ziskat tim backup a historii.
 Default neni = __nutno explicitne tuto envvar zadat__. 
 - DOMAIN: (pro debugging, kdyz nebezi za __RP__) override domeny __D__.
+- WEBDAV_HOST: 
+- WEBDAV_PATH:
 
 [Dockerfile](Dockerfile) umožňuje nasadit jako kontejner,
 idealně pomocí orchestrátoru jako např. [kubernetes](https://kubernetes.io/).

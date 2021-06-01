@@ -4,6 +4,7 @@ import fs from 'fs'
 import path from 'path'
 const webdav = require('webdav-server').v2
 const hostname = process.env.WEBDAV_HOST || '127.0.0.1'
+const webdavPath = process.env.WEBDAV_PATH || '/'
 
 export default (port, DATA_FOLDER) => {
   // User manager (tells who are the users)
@@ -30,7 +31,7 @@ export default (port, DATA_FOLDER) => {
       privilegeManager.setRights(user, '/', [ 'all' ])
     })
 
-    server.setFileSystem('/' + domain, foldr, (success) => {
+    server.setFileSystem(webdavPath + domain, foldr, (success) => {
       console.log(`${folder} mounted`)
     })
   }
