@@ -63,5 +63,11 @@ module.exports = (g) => {
       dirList[0].filename.should.equal('/index.yaml')
     })
 
+    it('shall read /index.yaml', async () => {
+      const c = await clients['testdomain2.cz'].getFileContents('/index.yaml')
+      const desiredContent = 'title: pokus2+ěščřžýáíé' //await fs.promises.readFile()
+      c.toString().should.equal(desiredContent)
+    })
+
   })
 }
