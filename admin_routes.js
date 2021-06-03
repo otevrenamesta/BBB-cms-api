@@ -9,6 +9,7 @@ export default (ctx, DATA_FOLDER) => {
 
   app.post('/',
     // auth.requireMembership(ROLE.PROJECT_INSERTER),
+    auth.required,
     JSONBodyParser,
     (req, res, next) => {
       const domain = process.env.DOMAIN || req.hostname
@@ -23,6 +24,7 @@ export default (ctx, DATA_FOLDER) => {
     //     return can ? next() : next(401)
     //   }).catch(next)
     // },
+    auth.required,
     JSONBodyParser,
     (req, res, next) => {
       const domain = process.env.DOMAIN || req.hostname

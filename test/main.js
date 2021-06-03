@@ -13,13 +13,13 @@ const g = {
   usergroups: []
 }
 const mocks = {
-  // auth: {
-  //   required: (req, res, next) => { return next() },
-  //   requireMembership: (gid) => (req, res, next) => {
-  //     return g.usergroups.indexOf(gid) >= 0 ? next() : next(403)
-  //   },
-  //   getUID: (req) => g.UID
-  // }
+  auth: {
+    required: (req, res, next) => { return next() },
+    requireMembership: (gid) => (req, res, next) => {
+      return g.usergroups.indexOf(gid) >= 0 ? next() : next(403)
+    },
+    getUID: (req) => g.UID
+  }
 }
 
 describe('app', () => {
@@ -40,7 +40,7 @@ describe('app', () => {
   describe('API', () => {
     //
     const submodules = [
-      './webdav'
+      './webdav', './routes'
     ]
     submodules.map((i) => {
       const subMod = require(i)

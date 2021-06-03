@@ -5,13 +5,13 @@ import path from 'path'
 import fs from 'fs'
 import cors from 'cors'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
-import initAuth from 'modularni-urad-utils/auth'
+import { required } from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 import initWebDavServer from './webdav/server.js'
 
-export async function init () {
+export async function init (mocks = null) {
   const app = express()
-  const auth = initAuth(app)
+  const auth = mocks ? mocks.auth : { required }
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
