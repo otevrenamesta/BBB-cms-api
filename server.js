@@ -1,4 +1,3 @@
-process.chdir('/tmp');
 import express from 'express'
 import morgan from 'morgan'
 import path from 'path'
@@ -9,9 +8,9 @@ import { required } from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 import initWebDavServer from './webdav/server.js'
 
-export async function init (mocks = null) {
+export async function init (authmocks = null) {
   const app = express()
-  const auth = mocks ? mocks.auth : { required }
+  const auth = authmocks ? authmocks : { required }
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
@@ -35,7 +34,13 @@ export async function init (mocks = null) {
 if (process.env.NODE_ENV !== 'test') {
   const host = process.env.HOST || '127.0.0.1'
   const port = process.env.PORT || 3000
-  init().then(app => {
+  const mocks = process.env.SESSION_MOCK ? {
+    required: (req, res, next) => {
+      req.user = JSON.parse(process.env.SESSION_MOCK)
+      next()
+    }
+  }: null
+  init(mocks).then(app => {
     app.listen(port, host, (err) => {
       if (err) throw err
       console.log(`frodo do magic on ${host}:${port}`)
@@ -44,5 +49,3 @@ if (process.env.NODE_ENV !== 'test') {
     console.error(err)
   })
 }
-
-if (process.env.SESSION_MOCK) require('modularni-urad-utils/mocks/auth')()
