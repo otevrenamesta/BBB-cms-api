@@ -30,6 +30,8 @@ export default (ctx) => {
       .then(css => _sendContent(res, css, 'text/css')).catch(next)
   })
 
+  app.use('/api', adminRoutes(ctx, DATA_FOLDER))
+
   if (process.env.DOMAIN) {
     app.use('/data', express.static(path.join(DATA_FOLDER, process.env.DOMAIN)))
 
@@ -39,8 +41,6 @@ export default (ctx) => {
         .then(r => _sendContent(res, r, 'text/html')).catch(next)
     })
   }
-
-  app.use('/api', adminRoutes(ctx, DATA_FOLDER))
 
   return app
 }

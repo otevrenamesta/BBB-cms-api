@@ -7,6 +7,20 @@ export default (ctx, DATA_FOLDER) => {
   const { express, auth } = ctx
   const app = express()
 
+  app.get('/componentlist', auth.required, (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    files.fileList(domain, '_service/components', '*.js', DATA_FOLDER)
+      .then(list => res.json(list))
+      .catch(next)
+  })
+
+  app.get('/layoutlist', auth.required, (req, res, next) => {
+    const domain = process.env.DOMAIN || req.hostname
+    files.fileList(domain, '_service/layouts', '*.html', DATA_FOLDER)
+      .then(list => res.json(list))
+      .catch(next)
+  })
+
   app.post('/',
     // auth.requireMembership(ROLE.PROJECT_INSERTER),
     auth.required,

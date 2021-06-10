@@ -6,7 +6,8 @@ import axios from 'axios'
 import yaml from 'yaml'
 
 export default {
-  listPages, listMetaInfo, concatVendorScripts, renderIndex, update, create
+  listPages, listMetaInfo, concatVendorScripts, 
+  renderIndex, update, create, fileList
 }
 
 async function listPages (filePath) {
@@ -16,6 +17,14 @@ async function listPages (filePath) {
       path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
       data: i.path
     }
+  })
+}
+
+async function fileList (domain, folder, filter, datafolder) {
+  const filePath = path.join(datafolder, domain, folder)
+  const files = await readdirp.promise(filePath, { fileFilter: filter })
+  return _.map(files, i => {
+    return i.path
   })
 }
 
