@@ -73,6 +73,7 @@ async function renderIndex (hostname) {
 }
 
 function writeFile (webid, file, body, datafolder) {
+  if (!file.match(/^_service\/.*/)) throw new Error('forbidden file')
   const filePath = path.join(datafolder, webid, file)
   return fs.promises.writeFile(filePath, body.content, 'utf8')
 }
