@@ -4,13 +4,13 @@ import path from 'path'
 import fs from 'fs'
 import cors from 'cors'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
-import { required } from 'modularni-urad-utils/auth'
+import { required, requireMembership } from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 import initWebDavServer from './webdav/server.js'
 
 export async function init (authmocks = null) {
   const app = express()
-  const auth = authmocks ? authmocks : { required }
+  const auth = authmocks ? authmocks : { required, requireMembership }
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
@@ -38,7 +38,8 @@ if (process.env.NODE_ENV !== 'test') {
     required: (req, res, next) => {
       req.user = JSON.parse(process.env.SESSION_MOCK)
       next()
-    }
+    },
+    requireMembership
   }: null
   init(mocks).then(app => {
     app.listen(port, host, (err) => {

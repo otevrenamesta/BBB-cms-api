@@ -2,19 +2,21 @@ import bodyParser from 'body-parser'
 import files from './files.js'
 
 const JSONBodyParser = bodyParser.json()
+const WEBMASTER = process.env.WEBMASTER_GROUP || 'webmaster'
 
 export default (ctx, DATA_FOLDER) => {
   const { express, auth } = ctx
+  const { required, requireMembership } = auth
   const app = express()
 
-  app.get('/componentlist', auth.required, (req, res, next) => {
+  app.get('/componentlist', required, (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
     files.fileList(domain, '_service/components', '*.js', DATA_FOLDER)
       .then(list => res.json(list))
       .catch(next)
   })
 
-  app.get('/layoutlist', auth.required, (req, res, next) => {
+  app.get('/layoutlist', required, (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
     files.fileList(domain, '_service/layouts', '*.html', DATA_FOLDER)
       .then(list => res.json(list))
@@ -23,7 +25,7 @@ export default (ctx, DATA_FOLDER) => {
 
   app.post('/',
     // auth.requireMembership(ROLE.PROJECT_INSERTER),
-    auth.required,
+    required,
     JSONBodyParser,
     (req, res, next) => {
       const domain = process.env.DOMAIN || req.hostname
@@ -38,11 +40,22 @@ export default (ctx, DATA_FOLDER) => {
     //     return can ? next() : next(401)
     //   }).catch(next)
     // },
-    auth.required,
+    required,
     JSONBodyParser,
     (req, res, next) => {
       const domain = process.env.DOMAIN || req.hostname
       files.update(domain, req.query.file, req.query.id, req.body, DATA_FOLDER)
+        .then(updated => { res.json('ok') })
+        .catch(next)
+    })
+
+  app.put('/file', 
+    required, 
+    requireMembership(WEBMASTER), 
+    JSONBodyParser, 
+    (req, res, next) => {
+      const domain = process.env.DOMAIN || req.hostname
+      files.writeFile(domain, req.query.file, req.body, DATA_FOLDER)
         .then(updated => { res.json('ok') })
         .catch(next)
     })

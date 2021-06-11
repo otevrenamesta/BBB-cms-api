@@ -7,7 +7,7 @@ import yaml from 'yaml'
 
 export default {
   listPages, listMetaInfo, concatVendorScripts, 
-  renderIndex, update, create, fileList
+  renderIndex, update, create, fileList, writeFile
 }
 
 async function listPages (filePath) {
@@ -70,6 +70,11 @@ async function renderIndex (hostname) {
   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
   const noScript = 'Your browser does not support JavaScript!'
   return template.replace(/{{ NOSCRIPT }}/g, noScript)
+}
+
+function writeFile (webid, file, body, datafolder) {
+  const filePath = path.join(datafolder, webid, file)
+  return fs.promises.writeFile(filePath, body.content, 'utf8')
 }
 
 async function update (webid, file, id, body, datafolder) {
