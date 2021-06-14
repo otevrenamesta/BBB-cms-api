@@ -12,12 +12,14 @@ export default {
 
 async function listPages (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
-  return files.filter(i => i.basename !== '404.yaml').map(i => {
-    return {
-      path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
-      data: i.path
-    }
-  })
+  return files
+    .filter(i => i.basename !== '404.yaml' && i.path.indexOf('_service') < 0)
+    .map(i => {
+      return {
+        path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
+        data: i.path
+      }
+    })
 }
 
 async function fileList (domain, folder, filter, datafolder) {
