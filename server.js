@@ -8,9 +8,9 @@ import { required, requireMembership } from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 import initWebDavServer from './webdav/server.js'
 
-export async function init (authmocks = null) {
+export async function init () {
   const app = express()
-  const auth = authmocks ? authmocks : { required, requireMembership }
+  const auth = { required, requireMembership }
   process.env.NODE_ENV !== 'production' && app.use(morgan())
   app.use(cors())
 
@@ -34,14 +34,7 @@ export async function init (authmocks = null) {
 if (process.env.NODE_ENV !== 'test') {
   const host = process.env.HOST || '127.0.0.1'
   const port = process.env.PORT || 3000
-  const mocks = process.env.SESSION_MOCK ? {
-    required: (req, res, next) => {
-      req.user = JSON.parse(process.env.SESSION_MOCK)
-      next()
-    },
-    requireMembership
-  }: null
-  init(mocks).then(app => {
+  init().then(app => {
     app.listen(port, host, (err) => {
       if (err) throw err
       console.log(`frodo do magic on ${host}:${port}`)
