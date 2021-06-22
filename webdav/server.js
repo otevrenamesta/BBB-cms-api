@@ -10,7 +10,8 @@ let webDavUsers = null
 try {
   webDavUsers = JSON.parse(process.env.WEBDAV_USERS)
 } catch (e) {
-  throw new Error('process.env.WEBDAV_USERS not valid JSON!')
+  if (process.env.WEBDAV_PORT)
+    throw new Error('process.env.WEBDAV_USERS not valid JSON!')
 }
 
 export default (port, DATA_FOLDER) => {
