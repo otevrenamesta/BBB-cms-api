@@ -7,6 +7,7 @@ import initErrorHandlers from 'modularni-urad-utils/error_handlers'
 import { required, requireMembership } from 'modularni-urad-utils/auth'
 import initRoutes from './routes'
 import initWebDavServer from './webdav/server.js'
+import startWatcher from './watcher'
 
 export default async function init () {
   const app = express()
@@ -23,6 +24,7 @@ export default async function init () {
   }
 
   initRoutes({ express, auth, app, DATA_FOLDER })
+  startWatcher(DATA_FOLDER)
   
   process.env.WEBDAV_PORT 
     && initWebDavServer(process.env.WEBDAV_PORT, DATA_FOLDER)

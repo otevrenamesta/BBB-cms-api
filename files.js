@@ -7,27 +7,27 @@ import yaml from 'yaml'
 
 export default {
   listPages, listMetaInfo, concatVendorScripts, 
-  renderIndex, update, create, fileList, writeFile
+  update, create, fileList, writeFile
 }
 
 async function listPages (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
-  return files
+  return JSON.stringify(files
     .filter(i => i.basename !== '404.yaml' && i.path.indexOf('_service') < 0)
     .map(i => {
       return {
         path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
         data: i.path
       }
-    })
+    }))
 }
 
 async function fileList (domain, folder, filter, datafolder) {
   const filePath = path.join(datafolder, domain, folder)
   const files = await readdirp.promise(filePath, { fileFilter: filter })
-  return _.map(files, i => {
+  return JSON.stringify(_.map(files, i => {
     return i.path
-  })
+  }))
 }
 
 async function listMetaInfo (filePath) {
@@ -43,7 +43,7 @@ async function listMetaInfo (filePath) {
       }
     })
   }))
-  return data
+  return JSON.stringify(data)
 }
 
 const scripts = [
@@ -68,11 +68,11 @@ async function concatVendorScripts () {
   return s
 }
 
-async function renderIndex (hostname) {
-  const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-  const noScript = 'Your browser does not support JavaScript!'
-  return template.replace(/{{ NOSCRIPT }}/g, noScript)
-}
+// async function renderIndex (hostname) {
+//   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
+//   const noScript = 'Your browser does not support JavaScript!'
+//   return template.replace(/{{ NOSCRIPT }}/g, noScript)
+// }
 
 function writeFile (webid, file, body, datafolder) {
   if (!file.match(/^_service\/.*/)) throw new Error('forbidden file')

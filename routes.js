@@ -1,51 +1,63 @@
-import path from 'path'
 import files from './files.js'
-import buildStyle from './sass_render.js'
-import adminRoutes from './admin_routes.js'
 
-export default (ctx) => {
-  const { express, app, DATA_FOLDER } = ctx
+const WEBMASTER = process.env.WEBMASTER_GROUP || 'webmaster'
 
-  app.get('/vendor.js', (req, res, next) => {
+export default (ctx, DATA_FOLDER) => {
+  const { express, auth } = ctx
+  const { required, requireMembership } = auth
+  const JSONBodyParser = express.json()
+  const app = express()
+
+  app.get('/componentlist', required, (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
-    files.concatVendorScripts(domain)
-      .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
+    files.fileList(domain, '_service/components', '*.js', DATA_FOLDER)
+      .then(list => res.json(list))
+      .catch(next)
   })
 
-  app.get('/routes.json', (req, res, next) => {
+  app.get('/layoutlist', required, (req, res, next) => {
     const domain = process.env.DOMAIN || req.hostname
-    const filePath = path.join(DATA_FOLDER, domain)
-    files.listPages(filePath).then(r => res.json(r)).catch(next)
+    files.fileList(domain, '_service/layouts', '*.html', DATA_FOLDER)
+      .then(list => res.json(list))
+      .catch(next)
   })
 
-  app.get('/metainfo.json', (req, res, next) => {
-    const domain = process.env.DOMAIN || req.hostname
-    const filePath = path.join(DATA_FOLDER, domain)
-    files.listMetaInfo(filePath).then(r => res.json(r)).catch(next)
-  })
-
-  app.get('/style.css', (req, res, next) => {
-    const domain = process.env.DOMAIN || req.hostname
-    buildStyle(domain, DATA_FOLDER)
-      .then(css => _sendContent(res, css, 'text/css')).catch(next)
-  })
-
-  app.use('/api', adminRoutes(ctx, DATA_FOLDER))
-
-  if (process.env.DOMAIN) {
-    app.use('/data', express.static(path.join(DATA_FOLDER, process.env.DOMAIN)))
-
-    app.get('*', (req, res, next) => {
+  app.post('/',
+    // auth.requireMembership(ROLE.PROJECT_INSERTER),
+    required,
+    JSONBodyParser,
+    (req, res, next) => {
       const domain = process.env.DOMAIN || req.hostname
-      files.renderIndex(domain)
-        .then(r => _sendContent(res, r, 'text/html')).catch(next)
+      files.create(domain, req.body, auth.getUID(req), DATA_FOLDER)
+        .then(created => { res.json({ content: created }) })
+        .catch(next)
     })
-  }
+
+  app.put('/',
+    // (req, res, next) => {
+    //   projekty.canIUpdate(req.params.id, auth.getUID(req), knex).then(can => {
+    //     return can ? next() : next(401)
+    //   }).catch(next)
+    // },
+    required,
+    JSONBodyParser,
+    (req, res, next) => {
+      const domain = process.env.DOMAIN || req.hostname
+      files.update(domain, req.query.file, req.query.id, req.body, DATA_FOLDER)
+        .then(updated => { res.json('ok') })
+        .catch(next)
+    })
+
+  app.put('/file', 
+    required, 
+    requireMembership(WEBMASTER), 
+    JSONBodyParser, 
+    (req, res, next) => {
+      const domain = process.env.DOMAIN || req.hostname
+      files.writeFile(domain, req.query.file, req.body, DATA_FOLDER)
+        .then(updated => { res.json('ok') })
+        .catch(next)
+    })
 
   return app
-}
-
-function _sendContent (res, content, ctype) {
-  res.set('Content-Type', ctype)
-  res.send(content)
 }
