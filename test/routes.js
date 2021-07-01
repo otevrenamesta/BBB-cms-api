@@ -6,26 +6,24 @@ chai.should()
 module.exports = (g) => {
   //
   const r = chai.request(g.baseurl)
-  const u1 = {
-    username: 'admin',
-    password: 'secret'
-  }
 
   return describe('routes', () => {
 
-    it('shall return style', async () => {
-      const res = await r.get('/style.css')
+    it('shall return componentlist', async () => {
+      g.mockUser.groups = ['webmaster']
+      const res = await r.get('/componentlist').set('Authorization', 'Bearer f')
       res.status.should.equal(200)
     })
 
-    it('shall return routes.json', async () => {
-      const res = await r.get('/routes.json')
+    it('shall return layoutlist', async () => {
+      const res = await r.get('/layoutlist').set('Authorization', 'Bearer f')
       res.status.should.equal(200)
       console.log(res.body)
     })
 
-    it('shall return metainfo.json', async () => {
-      const res = await r.get('/metainfo.json')
+    it('shall create new page', async () => {
+      const res = await r.post('/').send({ path: 'new/created.yaml' })
+        .set('Authorization', 'Bearer f')
       res.status.should.equal(200)
       console.log(res.body)
     })

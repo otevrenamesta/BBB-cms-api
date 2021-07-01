@@ -1,4 +1,5 @@
 import readdirp from 'readdirp'
+import mkdirp from 'mkdirp'
 import path from 'path'
 import fs from 'fs'
 import _ from 'underscore'
@@ -69,16 +70,24 @@ async function update (webid, file, id, body, datafolder) {
 }
 
 async function create (webid, body, UID, datafolder) {
-  const parent = body.parent ? path.dirname(body.parent) : ''
-  const filePath = path.join(path.resolve(datafolder), webid, parent, `${body.path}.yaml`)
+  const filePath = path.join(datafolder, webid, body.path)
+  function _writePage () {
+    const now = (new Date()).toISOString()
+    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
+    return fs.promises.writeFile(filePath, data, 'utf8')
+  }
   try {
     await fs.promises.stat(filePath)
     throw new Error('already exists')
   } catch (e) {
     if (e.code !== 'ENOENT') throw e
-    const now = (new Date()).toISOString()
-    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
-    await fs.promises.writeFile(filePath, data, 'utf8')
-    return data
+    try {
+      await _writePage()
+    } catch (e) {
+      if (e.code !== 'ENOENT') throw e
+      const parent = path.dirname(filePath)
+      await mkdirp(parent)
+      return _writePage()
+    }
   }
 }

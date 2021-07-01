@@ -4,6 +4,7 @@ import chai from 'chai'
 import express from 'express'
 import path from 'path'
 
+import SessionServiceMock from 'modularni-urad-utils/mocks/sessionService'
 import cleanup from './utils/cleanup'
 import init from '../index'
 const chaiHttp = require('chai-http')
@@ -14,28 +15,20 @@ const dataServerPort = port + 1
 const g = {
   baseurl: `http://localhost:${port}`,
   dataurl: `http://localhost:${dataServerPort}`,
-  UID: 110,
-  usergroups: [],
+  mockUser: { id: 42 },
+  sessionBasket: [],
   createdFiles: []
-}
-const mocks = {
-  auth: {
-    required: (req, res, next) => { return next() },
-    requireMembership: (gid) => (req, res, next) => {
-      return g.usergroups.indexOf(gid) >= 0 ? next() : next(403)
-    },
-    getUID: (req) => g.UID
-  }
 }
 const staticFolder = path.join(process.env.DATA_FOLDER, process.env.DOMAIN)
 const dataApp = express().use(express.static(staticFolder))
 
 describe('app', () => {
   before(done => {
-    init(mocks).then(app => {
+    g.sessionSrvcMock = SessionServiceMock(process.env.SESSION_SERVICE_PORT, g)
+    init().then(app => {
       g.server = app.listen(port, '127.0.0.1', (err) => {
         if (err) return done(err)
-        setTimeout(done, 1500)
+        setTimeout(done, 500)
       })
       g.dataServer = dataApp.listen(dataServerPort, '127.0.0.1')
     }).catch(done)
@@ -52,8 +45,8 @@ describe('app', () => {
     //
     const submodules = [
       // './webdav', 
-      // './routes',
-      './watcher'
+      './watcher',
+      './routes'
     ]
     submodules.map((i) => {
       const subMod = require(i)
