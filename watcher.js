@@ -6,25 +6,49 @@ import sassRenderer from './sass_render'
 import files from './files'
 
 const SYSTEMFILES = {
-  // '_service/vendor.js',
   '_service/routes.json': files.listPages,
   '_service/metainfo.json': files.listMetaInfo,
   '_service/style.css': sassRenderer
 }
+const STYLE = SYSTEMFILES['_service/style.css']
 
 export default function doWatch(DATA_FOLDER) {
 
-  const ch = chokidar.watch(DATA_FOLDER, {})
+  const ch = chokidar.watch(DATA_FOLDER, {
+    ignored: _.map(_.keys(SYSTEMFILES), i => `**/${i}`),
+    ignoreInitial: true
+  })
+  const r = /\/(?<domain>[^\/]*)\/(?<file>.*)$/
+  function _getInfo (filepath) {
+    return filepath.substring(DATA_FOLDER.length).match(r).groups
+  }
   
   ch.on('add', async (filepath, stats) => {
-    console.log('add: ', filepath, stats)
+    const { domain, file } = _getInfo(filepath)
+
+    if (file.indexOf('_service') !== 0) {
+      _runBuilders(_.omit(SYSTEMFILES, '_service/style.css'), domain, DATA_FOLDER)
+    } else if (file.match('/.*.sass$')) {
+      _runBuilders([STYLE])
+    }
   })
 
   ch.on('change', async (filepath, stats) => {
+    const { domain, file } = _getInfo(filepath)
+    if (file.match('/.*.sass$')) _runBuilders([STYLE])
     console.log('change: ', filepath, stats)
   })
 
   _checkCurrentState(DATA_FOLDER)
+}
+
+
+function _runBuilders (builders, webfolder, DATA_FOLDER) {
+  _.map(builders, async (callBack, sysfile) => {
+    const filepath = path.join(DATA_FOLDER, webfolder, sysfile)
+    const content = await callBack(path.join(DATA_FOLDER, webfolder))
+    return fs.promises.writeFile(filepath, content)
+  })
 }
 
 async function _checkCurrentState(DATA_FOLDER) {
@@ -41,29 +65,3 @@ async function _checkCurrentState(DATA_FOLDER) {
     })
   })
 }
-
-
-
-// app.get('/vendor.js', (req, res, next) => {
-//   const domain = process.env.DOMAIN || req.hostname
-//   files.concatVendorScripts(domain)
-//     .then(r => _sendContent(res, r, 'text/javascript')).catch(next)
-// })
-
-// app.get('/routes.json', (req, res, next) => {
-//   const domain = process.env.DOMAIN || req.hostname
-//   const filePath = path.join(DATA_FOLDER, domain)
-//   files.listPages(filePath).then(r => res.json(r)).catch(next)
-// })
-
-// app.get('/metainfo.json', (req, res, next) => {
-//   const domain = process.env.DOMAIN || req.hostname
-//   const filePath = path.join(DATA_FOLDER, domain)
-//   files.listMetaInfo(filePath).then(r => res.json(r)).catch(next)
-// })
-
-// app.get('/style.css', (req, res, next) => {
-//   const domain = process.env.DOMAIN || req.hostname
-//   buildStyle(domain, DATA_FOLDER)
-//     .then(css => _sendContent(res, css, 'text/css')).catch(next)
-// })
