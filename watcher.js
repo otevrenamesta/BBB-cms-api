@@ -10,7 +10,8 @@ const SYSTEMFILES = {
   '_service/metainfo.json': files.listMetaInfo,
   '_service/style.css': sassRenderer
 }
-const STYLE = SYSTEMFILES['_service/style.css']
+const STYLE = _.pick(SYSTEMFILES, '_service/style.css')
+const META = _.pick(SYSTEMFILES, '_service/metainfo.json')
 
 export default function doWatch(DATA_FOLDER) {
 
@@ -25,18 +26,18 @@ export default function doWatch(DATA_FOLDER) {
   
   ch.on('add', async (filepath, stats) => {
     const { domain, file } = _getInfo(filepath)
-
     if (file.indexOf('_service') !== 0) {
       _runBuilders(_.omit(SYSTEMFILES, '_service/style.css'), domain, DATA_FOLDER)
-    } else if (file.match('/.*.sass$')) {
-      _runBuilders([STYLE])
     }
   })
 
   ch.on('change', async (filepath, stats) => {
     const { domain, file } = _getInfo(filepath)
-    if (file.match('/.*.sass$')) _runBuilders([STYLE])
-    console.log('change: ', filepath, stats)
+    if (file.match('.*.scss$')) {
+      _runBuilders(STYLE, domain, DATA_FOLDER)
+    } else if (file.indexOf('_service') !== 0) {
+      _runBuilders(META, domain, DATA_FOLDER)
+    }
   })
 
   _checkCurrentState(DATA_FOLDER)

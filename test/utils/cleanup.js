@@ -8,7 +8,8 @@ const toBeCleaned = [
   'testdomain2.cz/_service/metainfo.json',
   'testdomain2.cz/_service/routes.json',
   'testdomain.cz/new/created.yaml',
-  'testdomain.cz/new'
+  'testdomain.cz/new',
+  'testdomain.cz/_service/style/pokus.scss'
 ]
 
 export default function (DATA_FOLDER) {

@@ -43,12 +43,6 @@ async function listMetaInfo (filePath) {
   return JSON.stringify(data)
 }
 
-// async function renderIndex (hostname) {
-//   const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-//   const noScript = 'Your browser does not support JavaScript!'
-//   return template.replace(/{{ NOSCRIPT }}/g, noScript)
-// }
-
 function writeFile (webid, file, body, datafolder) {
   if (!file.match(/^_service\/.*/)) throw new Error('forbidden file')
   const filePath = path.join(datafolder, webid, file)

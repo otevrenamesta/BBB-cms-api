@@ -35,6 +35,30 @@ module.exports = (g) => {
       found.data.should.equal('new/created.yaml')
     })
 
+    it('shall create new style', async () => {
+      const orig = await data.get('/_service/style/custom.scss')
+      const newContent = `
+        ${orig.text}
+        @import "pokus";
+      `
+      const res = await r.put('/file?file=_service/style/pokus.scss')
+          .send({ content: '.ahoj { width: 1331px; }' })
+          .set('Authorization', 'Bearer f')
+      res.status.should.equal(200)
+      const resMain = await r.put('/file?file=_service/style/custom.scss')
+          .send({ content: newContent })
+          .set('Authorization', 'Bearer f')
+      resMain.status.should.equal(200)
+      await wait(1500)
+      const res2 = await data.get('/_service/style.css')
+      res2.text.indexOf('width: 1331px;').should.be.above(0)
+      // revert
+      const resRevert = await r.put('/file?file=_service/style/custom.scss')
+          .send({ content: orig.text })
+          .set('Authorization', 'Bearer f')
+      resRevert.status.should.equal(200)
+    })
+
     // it('shal update page', async () => {
     //   const res = await data.get('/_service/metainfo.json')
     //   const found
