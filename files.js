@@ -19,12 +19,13 @@ async function listPages (filePath) {
     }))
 }
 
+// This is used only for admin routes
 async function fileList (domain, folder, filter, datafolder) {
   const filePath = path.join(datafolder, domain, folder)
   const files = await readdirp.promise(filePath, { fileFilter: filter })
-  return JSON.stringify(_.map(files, i => {
+  return _.map(files, i => {
     return i.path
-  }))
+  })
 }
 
 async function listMetaInfo (filePath) {
