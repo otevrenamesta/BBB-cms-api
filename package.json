@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "mkdir -p dist && cp -R node_modules *.js templates dist/",
+    "webdev": "node -r esm -r ./webdev/env.js --inspect ./webdev/server.js",
     "buildvendor": "node -r esm vendor.js",
     "start": "node -r esm server.js",
     "startdbg": "nodemon -r esm --inspect server.js",

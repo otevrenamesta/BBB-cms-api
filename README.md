@@ -51,3 +51,14 @@ npm run startdbg
 ## Pripojeni pres web dav
 
 Working: z VSCode pres plugin [remote-workspace](https://marketplace.visualstudio.com/items?itemName=liveecommerce.vscode-remote-workspace).
+
+## Lokalni webdesign
+
+Predpoklada se, ze data jsou v repositari, ktery je vyclonovan ve slozce $REPO.
+
+```
+git clone https://github.com/otevrenamesta/bbb-cms-api server
+cd server
+npm i --production
+WEB_REPO_PATH=$REPO npm run webdev
+```

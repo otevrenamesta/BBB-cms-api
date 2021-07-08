@@ -16,9 +16,11 @@ const scripts = [
   'https://raw.githubusercontent.com/otevrenamesta/bbb-vue-web/master/dist/bbb-web.js'
 ]
 
-async function concatVendorScripts () {
-  if (!process.env.OUTFILE) throw new Error('process.env.OUTFILE is mandatory')
-  const OUTFILE = process.env.OUTFILE
+export default async function concatVendorScripts (outfile) {
+  if (!process.env.OUTFILE && !outfile) {
+    throw new Error('process.env.OUTFILE is mandatory')
+  }
+  const OUTFILE = outfile || process.env.OUTFILE
   const reqs = await Promise.all(scripts.map(i => axios.get(i)))
   const content = _.reduce(reqs, (acc, i) => {
     return acc + '\n\n' + i.data
@@ -26,7 +28,7 @@ async function concatVendorScripts () {
   fs.promises.writeFile(OUTFILE, content, 'utf8')
 }
 
-concatVendorScripts()
+process.env.OUTFILE && concatVendorScripts(process.env.OUTFILE)
   .then(() => {
     console.log('done')
   })
