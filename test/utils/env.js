@@ -9,3 +9,5 @@ process.env.WEBDAV_USERS = JSON.stringify({
 })
 process.env.WEBDAV_PORT = 44444
 process.env.WEBDAV_PATH = '/webdav/'
+process.env.SESSION_SERVICE_PORT = 24000
+process.env.SESSION_SERVICE = `http://localhost:${process.env.SESSION_SERVICE_PORT}`

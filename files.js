@@ -1,27 +1,25 @@
 import readdirp from 'readdirp'
+import mkdirp from 'mkdirp'
 import path from 'path'
 import fs from 'fs'
 import _ from 'underscore'
-import axios from 'axios'
 import yaml from 'yaml'
 
-export default {
-  listPages, listMetaInfo, concatVendorScripts, 
-  renderIndex, update, create, fileList, writeFile
-}
+export default { listPages, listMetaInfo, update, create, fileList, writeFile }
 
 async function listPages (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
-  return files
+  return JSON.stringify(files
     .filter(i => i.basename !== '404.yaml' && i.path.indexOf('_service') < 0)
     .map(i => {
       return {
         path: '/' + i.path.replace(/.yaml$/g, '').replace(/index$/g, ''),
         data: i.path
       }
-    })
+    }))
 }
 
+// This is used only for admin routes
 async function fileList (domain, folder, filter, datafolder) {
   const filePath = path.join(datafolder, domain, folder)
   const files = await readdirp.promise(filePath, { fileFilter: filter })
@@ -43,35 +41,7 @@ async function listMetaInfo (filePath) {
       }
     })
   }))
-  return data
-}
-
-const scripts = [
-  'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/cs.min.js',
-  'https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/vuex/3.1.2/vuex.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.1.3/vue-router.min.js',
-  'https://unpkg.com/vue-meta@2.4.0/dist/vue-meta.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.0.0/js-yaml.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.1/marked.min.js',
-  'https://raw.githubusercontent.com/otevrenamesta/bbb-vue-web/master/dist/bbb-web.js'
-]
-
-async function concatVendorScripts () {
-  const reqs = await Promise.all(scripts.map(i => axios.get(i)))
-  const s = _.reduce(reqs, (acc, i) => {
-    return acc + '\n\n' + i.data
-  }, '')
-  return s
-}
-
-async function renderIndex (hostname) {
-  const template = await fs.promises.readFile('./templates/index.html', 'utf8')
-  const noScript = 'Your browser does not support JavaScript!'
-  return template.replace(/{{ NOSCRIPT }}/g, noScript)
+  return JSON.stringify(data)
 }
 
 function writeFile (webid, file, body, datafolder) {
@@ -95,16 +65,24 @@ async function update (webid, file, id, body, datafolder) {
 }
 
 async function create (webid, body, UID, datafolder) {
-  const parent = body.parent ? path.dirname(body.parent) : ''
-  const filePath = path.join(path.resolve(datafolder), webid, parent, `${body.path}.yaml`)
+  const filePath = path.join(datafolder, webid, body.path)
+  function _writePage () {
+    const now = (new Date()).toISOString()
+    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
+    return fs.promises.writeFile(filePath, data, 'utf8')
+  }
   try {
     await fs.promises.stat(filePath)
     throw new Error('already exists')
   } catch (e) {
     if (e.code !== 'ENOENT') throw e
-    const now = (new Date()).toISOString()
-    const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
-    await fs.promises.writeFile(filePath, data, 'utf8')
-    return data
+    try {
+      await _writePage()
+    } catch (e) {
+      if (e.code !== 'ENOENT') throw e
+      const parent = path.dirname(filePath)
+      await mkdirp(parent)
+      return _writePage()
+    }
   }
 }
