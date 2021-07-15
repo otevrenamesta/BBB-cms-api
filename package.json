@@ -23,6 +23,7 @@
     "cors": "^2.8.5",
     "esm": "^3.2.25",
     "express": "^4.17.1",
+    "http-proxy-middleware": "^2.0.1",
     "mkdirp": "^1.0.4",
     "modularni-urad-utils": "1.2.0",
     "morgan": "^1.10.0",

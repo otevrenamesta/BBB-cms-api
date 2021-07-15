@@ -1,5 +1,6 @@
 import express from 'express'
 import path from 'path'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 import InitAPI from '../index'
 import Prepare from './prepare'
 
@@ -9,6 +10,12 @@ async function init () {
   await Prepare()
   const staticFolder = path.join(process.env.DATA_FOLDER, process.env.DOMAIN)
   app.use('/data', express.static(staticFolder))
+  try {
+    const proxies = JSON.parse(process.env.PROXIES)
+    for (let i in proxies) {
+      app.use(i, createProxyMiddleware({ target: proxies[i], changeOrigin: true }))
+    }
+  } catch (_) {}
   app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')))
 
   // g.sessionSrvcMock = SessionServiceMock(process.env.SESSION_SERVICE_PORT, g)

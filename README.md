@@ -60,5 +60,7 @@ Predpoklada se, ze data jsou v repositari, ktery je vyclonovan ve slozce $REPO.
 git clone https://github.com/otevrenamesta/bbb-cms-api server
 cd server
 npm i --production
-WEB_REPO_PATH=$REPO npm run webdev
+PROXIES='{"/uniapi":"https://taborskasetkani.eu","/cdn":"https://taborskasetkanieu"}' \
+WEB_REPO_PATH=$REPO \
+npm run webdev
 ```
