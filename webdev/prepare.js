@@ -15,8 +15,13 @@ export default async function () {
   const to = process.env.WEB_REPO_PATH
   try {
     fs.statSync(from)
+    console.log(from, 'exists, removing ...')
+    fs.unlinkSync(from)
+    throw new Error()
   } catch (err) {
-    const { stdout, stderr } = await exec(`ln -s ${to} ${from}`)
+    console.log('linking ', from, '=>', to)
+    const { _, stderr } = await exec(`ln -s ${to} ${from}`)
+    if (stderr) throw new Error(stderr)
   }
   const vendorFile = path.join(to, '_service/vendor.js')
   concatVendorScripts(vendorFile)
