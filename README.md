@@ -62,16 +62,17 @@ _NOTE_: predpokladam, ze mam nainstalovany node (i npm).
 Je rada zpusobu, napr. [nvm](https://github.com/nvm-sh/nvm).
 
 ```
-BASE=/tmp
-cd $BASE
-# vyklonuji repositar s webem do slozky web (absolutne tedy /tmp/web)
+cd /tmp
+
+# vyklonuji repositar s webem do slozky web
 git clone https://github.com/otevrenamesta/demo.stredni web
+REPO=`pwd`/web
 
 # vyklonuji repositar s backendem do server
 git clone https://github.com/otevrenamesta/bbb-cms-api server
 cd server
 npm i --production
 PROXIES='{"/api":"https://stredni.web.otevrenamesta.cz","/cdn":"https://stredni.web.otevrenamesta.cz/"}' \
-WEB_REPO_PATH=$BASE/web \
+WEB_REPO_PATH=$REPO \
 npm run webdev
 ```
