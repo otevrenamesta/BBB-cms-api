@@ -55,12 +55,23 @@ Working: z VSCode pres plugin [remote-workspace](https://marketplace.visualstudi
 ## Lokalni webdesign
 
 Predpoklada se, ze data jsou v repositari, ktery je vyclonovan ve slozce $REPO.
+Pro priklad demoweb (https://github.com/otevrenamesta/demo.stredni),
+ktery je nasazen na adrese [https://stredni.web.otevrenamesta.cz](https://stredni.web.otevrenamesta.cz/).
+
+_NOTE_: predpokladam, ze mam nainstalovany node (i npm).
+Je rada zpusobu, napr. [nvm](https://github.com/nvm-sh/nvm).
 
 ```
+BASE=/tmp
+cd $BASE
+# vyklonuji repositar s webem do slozky web (absolutne tedy /tmp/web)
+git clone https://github.com/otevrenamesta/demo.stredni web
+
+# vyklonuji repositar s backendem do server
 git clone https://github.com/otevrenamesta/bbb-cms-api server
 cd server
 npm i --production
-PROXIES='{"/uniapi":"https://taborskasetkani.eu","/cdn":"https://taborskasetkanieu"}' \
-WEB_REPO_PATH=$REPO \
+PROXIES='{"/api":"https://stredni.web.otevrenamesta.cz","/cdn":"https://stredni.web.otevrenamesta.cz/"}' \
+WEB_REPO_PATH=$BASE/web \
 npm run webdev
 ```
