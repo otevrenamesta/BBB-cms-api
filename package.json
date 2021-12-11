@@ -1,16 +1,16 @@
 {
   "name": "bbb-cms-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "mkdir -p dist && cp -R node_modules *.js templates dist/",
     "webdev": "node -r esm -r ./webdev/env.js --inspect ./webdev/server.js",
-    "buildvendor": "node -r esm vendor.js",
     "start": "node -r esm server.js",
     "startdbg": "nodemon -r esm --inspect server.js",
-    "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
-    "testdbg": "mocha -r esm -r ./test/utils/env --inspect-brk './test/main.js'"
+    "test": "mocha -r esm --exit './test/main.js'",
+    "testdbg": "mocha -r esm --inspect './test/main.js'",
+    "buildvendor": "node -r esm vendor.js"
   },
   "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
   "license": "ISC",
@@ -25,7 +25,7 @@
     "express": "^4.17.1",
     "http-proxy-middleware": "^2.0.1",
     "mkdirp": "^1.0.4",
-    "modularni-urad-utils": "1.2.0",
+    "modularni-urad-utils": "1.5.0",
     "morgan": "^1.10.0",
     "readdirp": "^3.6.0",
     "sass": "^1.32.6",

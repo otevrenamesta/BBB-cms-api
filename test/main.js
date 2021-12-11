@@ -1,52 +1,23 @@
-/* global describe before after */
-// const fs = require('fs')
 import chai from 'chai'
-import express from 'express'
-import path from 'path'
-
-import SessionServiceMock from 'modularni-urad-utils/mocks/sessionService'
-import cleanup from './utils/cleanup'
-import init from '../index'
 const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
+chai.should()
 
-const port = Number(process.env.PORT) || 3333
-const dataServerPort = port + 1
-const g = {
-  baseurl: `http://localhost:${port}`,
-  dataurl: `http://localhost:${dataServerPort}`,
-  mockUser: { id: 42 },
-  sessionBasket: [],
-  createdFiles: []
-}
-const staticFolder = path.join(process.env.DATA_FOLDER, process.env.DOMAIN)
-const dataApp = express().use(express.static(staticFolder))
+const g = { chai }
+require('./env/init')(g)
 
 describe('app', () => {
-  before(done => {
-    g.sessionSrvcMock = SessionServiceMock(process.env.SESSION_SERVICE_PORT, g)
-    init().then(app => {
-      g.server = app.listen(port, '127.0.0.1', (err) => {
-        if (err) return done(err)
-        setTimeout(done, 500)
-      })
-      g.dataServer = dataApp.listen(dataServerPort, '127.0.0.1')
-    }).catch(done)
+  before(() => {
+    const InitModule = require('../index')
+    return g.InitApp(InitModule)
   })
-  after(done => {
-    cleanup(process.env.DATA_FOLDER)
-    g.server.close(err => {
-      return err ? done(err) : done()
-    })
-    g.dataServer.close()
-  })
+  after(g.close)
 
   describe('API', () => {
     //
     const submodules = [
-      // './webdav', 
-      './watcher',
-      './routes'
+      './suites/watcher',
+      './suites/routes'
     ]
     submodules.map((i) => {
       const subMod = require(i)

@@ -11,3 +11,4 @@ js/main.js
 docker-compose.yml
 dev/
 web
+package-lock.json

@@ -10,18 +10,18 @@ module.exports = (g) => {
   return describe('systemFiles', () => {
 
     it('shall return style', async () => {
-      const res = await r.get('/_service/style.css')
+      const res = await r.get('/testdomain.cz/_service/style.css')
       res.status.should.equal(200)
     })
 
     it('shall return routes.json', async () => {
-      const res = await r.get('/_service/routes.json')
+      const res = await r.get('/testdomain.cz/_service/routes.json')
       res.status.should.equal(200)
       res.body[0].data.should.equal('index.yaml')
     })
 
     it('shall return metainfo.json', async () => {
-      const res = await r.get('/_service/metainfo.json')
+      const res = await r.get('/testdomain.cz/_service/metainfo.json')
       res.status.should.equal(200)
       res.body['index.yaml'].title.should.equal('pokus')
     })

@@ -3,7 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import _ from 'underscore'
 import sassRenderer from './sass_render'
-import files from './files'
+import { DATA_FOLDER } from './consts'
+import files from './api/middleware'
 
 const SYSTEMFILES = {
   '_service/routes.json': files.listPages,
@@ -13,7 +14,7 @@ const SYSTEMFILES = {
 const STYLE = _.pick(SYSTEMFILES, '_service/style.css')
 const META = _.pick(SYSTEMFILES, '_service/metainfo.json')
 
-export default function doWatch(DATA_FOLDER) {
+export default function doWatch () {
 
   const ch = chokidar.watch(DATA_FOLDER, {
     ignored: _.map(_.keys(SYSTEMFILES), i => `**/${i}`),
@@ -34,6 +35,7 @@ export default function doWatch(DATA_FOLDER) {
   ch.on('change', async (filepath, stats) => {
     const { domain, file } = _getInfo(filepath)
     if (file.match('.*.scss$')) {
+      console.log(filepath, 'changed, style rebuild')
       _runBuilders(STYLE, domain, DATA_FOLDER)
     } else if (file.indexOf('_service') !== 0) {
       _runBuilders(META, domain, DATA_FOLDER)
