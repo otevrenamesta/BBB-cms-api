@@ -7,7 +7,7 @@ const SessionServiceMock = require('modularni-urad-utils/test/mocks/sessionServi
 module.exports = (g) => {
   process.env.PORT = 33333
   process.env.NODE_ENV = 'test'
-  process.env.DATA_FOLDER = path.resolve(path.dirname(__filename), '../data')
+  process.env.WEBDATA_FOLDER = path.resolve(path.dirname(__filename), '../data')
   process.env.WEBDAV_USERS = JSON.stringify({
     "testdomain.cz": { "gandalf":"mordor" },
     "testdomain2.cz":{ "frodo":"shire" }
@@ -70,7 +70,7 @@ module.exports = (g) => {
       g.server = app.listen(port, '127.0.0.1', (err) => {
         if (err) return reject(err)
 
-        const dataApp = express().use(express.static(process.env.DATA_FOLDER))
+        const dataApp = express().use(express.static(process.env.WEBDATA_FOLDER))
         g.dataServer = dataApp.listen(dataServerPort, '127.0.0.1')
 
         resolve()
@@ -82,7 +82,7 @@ module.exports = (g) => {
     g.sessionSrvcMock.close()
     g.server.close()
     g.dataServer.close()
-    await cleanup(process.env.DATA_FOLDER)
+    await cleanup(process.env.WEBDATA_FOLDER)
     return
   }
 }

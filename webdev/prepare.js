@@ -10,8 +10,8 @@ if (!process.env.WEB_REPO_PATH) {
 }
 
 export default async function () {
-  await mkdirp(process.env.DATA_FOLDER)
-  const from = path.join(process.env.DATA_FOLDER, process.env.DOMAIN)
+  await mkdirp(process.env.WEBDATA_FOLDER)
+  const from = path.join(process.env.WEBDATA_FOLDER, process.env.DOMAIN)
   const to = process.env.WEB_REPO_PATH
   try {
     fs.statSync(from)
