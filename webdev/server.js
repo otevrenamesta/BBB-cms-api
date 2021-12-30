@@ -8,7 +8,7 @@ async function init () {
   const g = {}
   const app = express()
   await Prepare()
-  const staticFolder = path.join(process.env.DATA_FOLDER, process.env.DOMAIN)
+  const staticFolder = path.join(process.env.WEBDATA_FOLDER, process.env.DOMAIN)
   app.use('/data', express.static(staticFolder))
   try {
     const proxies = JSON.parse(process.env.PROXIES)

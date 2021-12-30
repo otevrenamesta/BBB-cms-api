@@ -20,7 +20,7 @@ Predpoklada se pouziti reverse proxy __RP__ (napr. nginx), ktera:
 Pouze pomocí ENVIRONMENT VARIABLES, jsou samovysvětlující:
 - PORT: default 3000
 - HOST: default 127.0.0.1
-- DATA_FOLDER: Slozka s podslozkami (pojmenovanymi domenami, ktere backend serviruje) 
+- WEBDATA_FOLDER: Slozka s podslozkami (pojmenovanymi domenami, ktere backend serviruje) 
 obsahujicimi data jednotlich webu na tech domenach (__D__).
 Mozno pripojit do adresare weby pomoci submodulu z externich git repositaru 
 a ziskat tim backup a historii.
@@ -42,7 +42,7 @@ Tedy spusteni Napr.:
 ```
 SERVE_STATIC=1 \
 DOMAIN=pokus.cz \
-DATA_FOLDER=./data \
+WEBDATA_FOLDER=./data \
 SESSION_MOCK=3333 \
 SESSION_SERVICE=http://localhost:3333 \
 npm run startdbg

@@ -20,7 +20,7 @@ export default (ctx) => {
   function checkWebsiteConf (req, res, next) {
     const conf = req.tenantcfg.websites.find(i => i.domain === req.params.domain)
     if (!conf) return next(new ErrorClass(404, 'unknown website'))
-    if (!isMember(req, conf.webmastersGroup)) {
+    if (!isMember(req, conf.webmasterGroup)) {
       return next(new ErrorClass(403, 'you are not webmaster'))
     }
     next()
