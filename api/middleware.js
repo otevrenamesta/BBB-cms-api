@@ -32,7 +32,10 @@ async function fileList (domain, folder, filter, datafolder) {
 async function listMetaInfo (filePath) {
   const files = await readdirp.promise(filePath, { fileFilter: '*.yaml' })
   const data = {}
-  await Promise.all(files.filter(i => i.basename !== '404.yaml').map(i => {
+  function _filterFn (i) {
+    return i.basename !== '404.yaml' && i.basename.indexOf(':') === -1
+  }
+  await Promise.all(files.filter(_filterFn).map(i => {
     return fs.promises.readFile(i.fullPath, 'utf8').then(fileContent => {
       try {
         const tree = yaml.parse(fileContent)
