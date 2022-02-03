@@ -1,7 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import sass from 'sass'
-const NODE_MODULES = path.join(__dirname, './node_modules/')
+let NODE_MODULES = path.join(__dirname, './node_modules/')
+if (!fs.existsSync(path.join(NODE_MODULES, 'bulma'))) {
+  NODE_MODULES = path.join(path.resolve(__dirname + '/../../'), 'node_modules')
+}
 
 export default async function buildStyle (filePath) {
   const styleMain = path.join(filePath, '_service', 'style', 'custom.scss')  
