@@ -17,7 +17,7 @@ describe('app', () => {
     //
     const submodules = [
       './suites/style_t',
-      // './suites/routes_t'
+      './suites/files_t'
     ]
     submodules.map((i) => {
       const subMod = require(i)
