@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import _ from 'underscore'
 import yaml from 'yaml'
-import { DATA_FOLDER } from '../consts'
+import { FILE_SERVICE_URL } from '../consts'
 
 export default { listPages, listMetaInfo, update, create, fileList, writeFile }
 
@@ -57,7 +57,7 @@ function writeFile (webid, file, body) {
 async function update (webid, file, id, body, ctx) {
   const pathParts = id.split('.')
   // const filename = pathParts[0] === '/' ? 'index.yaml' : `${pathParts[0]}.yaml`
-  const filePath = path.join(DATA_FOLDER, webid, file)
+  const filePath = path.join(FILE_SERVICE_URL, webid, file)
 
   const src = await fs.promises.readFile(filePath, 'utf8')
   const tree = yaml.parse(src)
@@ -69,7 +69,7 @@ async function update (webid, file, id, body, ctx) {
 }
 
 async function create (webid, body, UID, ctx) {
-  const filePath = path.join(DATA_FOLDER, webid, body.path)
+  const filePath = path.join(FILE_SERVICE_URL, webid, body.path)
   function _writePage () {
     const now = (new Date()).toISOString()
     const data = `UID: ${UID}\ncreated_at: ${now}\nlayout: page\nchildren:`
