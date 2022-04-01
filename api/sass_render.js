@@ -15,8 +15,8 @@ const NODE_MODULES = function () {
 }()
 
 async function saveFiles (url, destFolder) {
-  const styleMain = url + '/' + path.join('_service', 'style', 'custom.scss')
-  const customList =  url + '/' + path.join('_service', 'style', 'components')
+  const styleMain = url + '/' + path.join('style', 'custom.scss')
+  const customList =  url + '/' + path.join('style', 'components')
   const compomentFolder = path.join(destFolder, 'components')
   let promises = []
 
