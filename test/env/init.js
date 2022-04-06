@@ -8,6 +8,8 @@ module.exports = (g) => {
   process.env.NODE_ENV = 'test'
   process.env.SESSION_SERVICE_PORT = 24000
   process.env.SESSION_SERVICE = `http://localhost:${process.env.SESSION_SERVICE_PORT}`
+  process.env.FILESTORAGE_PORT = 24001
+  process.env.FILESTORAGE_ACCESS_TOKEN_URL = `http://localhost:${process.env.FILESTORAGE_PORT}`
   const port = Number(process.env.PORT) || 3333
   const dataServerPort = port + 1
 

@@ -7,16 +7,24 @@ export default (ctx) => {
   const { express, auth, bodyParser, ErrorClass } = ctx
   const app = express()
 
-  app.get('/newpage', auth.session, auth.required, (req, res, next) => {
-    files.create(auth.getUID(req))
-      .then(created => { res.json({ content: created }) })
-      .catch(next)
+  app.get('/:domain/newpage', auth.session, checkWebsiteConf, async (req, res, next) => {
+    try {
+      const u = await files.uploadInfo(req.params.domain, req.user, req.tenantid)
+      const content = await files.create(auth.getUID(req))
+      res.json(Object.assign(u, { content }))
+    } catch (err) {
+      next(err)
+    }
   })
 
-  app.get('/changedpage', bodyParser, (req, res, next) => {
-    files.update(req.query.file, req.query.id, req.body, ErrorClass)
-      .then(updated => { res.json({ content: updated }) })
-      .catch(next)
+  app.put('/:domain/changedpage', auth.session, checkWebsiteConf, bodyParser, async (req, res, next) => {
+    try {
+      const u = await files.uploadInfo(req.params.domain, req.user, req.tenantid)
+      const content = await files.update(req.query.file, req.query.id, req.body, ErrorClass)
+      res.json(Object.assign(u, { content }))
+    } catch (err) {
+      next(err)
+    }
   })
 
   app.get('/(:domain).css', (req, res, next) => {
@@ -27,6 +35,15 @@ export default (ctx) => {
       res.end()
     }).catch(next)
   })
+
+  function checkWebsiteConf (req, res, next) {
+    const conf = req.tenantcfg.websites.find(i => i.domain === req.params.domain)
+    if (!conf) return next(new ErrorClass(404, 'unknown website'))
+    if (!auth.isMember(req, conf.webmastersGroup)) {
+      return next(new ErrorClass(403, 'you are not webmaster'))
+    }
+    next()
+  }
 
   return app
 }
