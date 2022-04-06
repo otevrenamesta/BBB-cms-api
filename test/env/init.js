@@ -1,6 +1,7 @@
 import path from 'path'
 import express from 'express'
 import { APIError } from 'modularni-urad-utils'
+import MediamanMock from './mediaman.mock'
 const SessionServiceMock = require('modularni-urad-utils/test/mocks/sessionService')
 
 module.exports = (g) => {
@@ -9,6 +10,7 @@ module.exports = (g) => {
   process.env.SESSION_SERVICE_PORT = 24000
   process.env.SESSION_SERVICE = `http://localhost:${process.env.SESSION_SERVICE_PORT}`
   process.env.FILESTORAGE_PORT = 24001
+  process.env.FILESTORAGE_URL = 'https://files.vxk.cz/'
   process.env.FILESTORAGE_ACCESS_TOKEN_URL = `http://localhost:${process.env.FILESTORAGE_PORT}`
   const port = Number(process.env.PORT) || 3333
   const dataServerPort = port + 1
@@ -53,7 +55,10 @@ module.exports = (g) => {
     return new Promise((resolve, reject) => {
       g.server = app.listen(port, '127.0.0.1', (err) => {
         if (err) return reject(err)
-        resolve()
+        g.MediamanMock = MediamanMock.listen(process.env.FILESTORAGE_PORT, (err) => {
+          if (err) return reject(err)
+          resolve()
+        })
       })
     })
   }
@@ -61,6 +66,7 @@ module.exports = (g) => {
   g.close = async function() {
     g.sessionSrvcMock.close()
     g.server.close()
+    g.MediamanMock.close()
     return
   }
 }

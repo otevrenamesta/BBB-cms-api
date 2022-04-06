@@ -1,16 +1,22 @@
 import axios from 'axios'
 import _ from 'underscore'
 import yaml from 'yaml'
-
-const TOKEN_URL = process.env.FILESTORAGE_ACCESS_TOKEN_URL
-if (!TOKEN_URL) throw new Error('env.FILESTORAGE_ACCESS_TOKEN_URL not set')
+import { TOKEN_URL } from '../consts'
 
 export default { update, create, uploadInfo }
 
+async function loadContent (file, ErrorClass) {
+  try {
+    const res = await axios.get(file)
+    return res.data
+  } catch (_) {
+    throw new ErrorClass(400, `could not get file ${file} from storage`)
+  }
+}
+
 async function update (file, id, body, ErrorClass) {
   const pathParts = id.split('.')
-  const srcReq = await axios.get(file)
-  const tree = yaml.parse(srcReq.data)
+  const tree = yaml.parse(await loadContent(file, ErrorClass))
   const subTree = _.get(tree, pathParts)
   if (!subTree) throw new ErrorClass(`Nothing found on path: ${id}`)
   Object.assign(subTree, body)
@@ -29,11 +35,11 @@ children:`
 }
 
 async function uploadInfo (web, user, schema) {
-  const desiredPath = `${schema}/_webdata/${web}/pages`
+  const desiredPath = `/_webdata/${web}/pages`
   const tokenUrl = TOKEN_URL.replace('{{TENANTID}}', schema)
   const req = await axios.get(tokenUrl, { data: { paths: [ `${desiredPath}/*` ] } })
   return {
-    path: desiredPath,
+    path: req.data.path + desiredPath,
     token: req.data.token
   }
 }

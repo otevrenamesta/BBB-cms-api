@@ -1,7 +1,7 @@
 import path from 'path'
 import files from './middleware.js'
 import renderStyle from './sass_render'
-import { FILE_SERVICE_URL } from '../consts'
+import { FILESTORAGE_URL } from '../consts'
 
 export default (ctx) => {
   const { express, auth, bodyParser, ErrorClass } = ctx
@@ -20,7 +20,9 @@ export default (ctx) => {
   app.put('/:domain/changedpage', auth.session, checkWebsiteConf, bodyParser, async (req, res, next) => {
     try {
       const u = await files.uploadInfo(req.params.domain, req.user, req.tenantid)
-      const content = await files.update(req.query.file, req.query.id, req.body, ErrorClass)
+      const file = FILESTORAGE_URL + webUrl(req.tenantid, req.params.domain)
+        + '/pages' + req.query.file
+      const content = await files.update(file, req.query.id, req.body, ErrorClass)
       res.json(Object.assign(u, { content }))
     } catch (err) {
       next(err)
@@ -28,8 +30,8 @@ export default (ctx) => {
   })
 
   app.get('/(:domain).css', (req, res, next) => {
-    const url = path.join(req.tenantid, '_webdata', req.params.domain)
-    renderStyle(FILE_SERVICE_URL + url).then(resultBuff => {
+    renderStyle(FILESTORAGE_URL + webUrl(req.tenantid, req.params.domain))
+    .then(resultBuff => {
       res.set('Content-Type', 'text/css')
       res.write(resultBuff)
       res.end()
@@ -43,6 +45,10 @@ export default (ctx) => {
       return next(new ErrorClass(403, 'you are not webmaster'))
     }
     next()
+  }
+
+  function webUrl (tenantid, domain) {
+    return path.join(tenantid, '_webdata', domain)
   }
 
   return app
