@@ -4,6 +4,7 @@ import axios from 'axios'
 import path from 'path'
 import sass from 'sass'
 import temp from 'temp'
+import rmfr from 'rmfr'
 const NODE_MODULES = function () {
   try {
     const bulma = require('bulma')
@@ -48,6 +49,6 @@ export default async function buildStyle (url) {
     const f = sass.renderSync({ file: styleMain, includePaths })
     return f.css
   } finally {
-    temp.cleanup()
+    rmfr(dir)
   }
 }
