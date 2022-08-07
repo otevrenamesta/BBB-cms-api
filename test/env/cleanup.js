@@ -13,9 +13,9 @@ const toBeCleaned = [
   'testdomain.cz/_service/style/pokus.scss'
 ]
 
-export default async function (DATA_FOLDER) {
+export default async function (FILE_SERVICE_URL) {
   return toBeCleaned.reduce((promise, i) => {
-    const p = path.join(DATA_FOLDER, i)
+    const p = path.join(FILE_SERVICE_URL, i)
     return promise.then(fs.promises.unlink(p))
   }, Promise.resolve())
 }
